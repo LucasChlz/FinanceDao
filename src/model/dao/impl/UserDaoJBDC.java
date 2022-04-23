@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import Excepts.AuthException;
 import db.DB;
 import db.DbException;
 import model.dao.UserDao;
@@ -20,11 +21,45 @@ public class UserDaoJBDC implements UserDao {
 	{
 		this.conn = conn;
 	}
+	
+	public void verifyByEmail(String email)
+	{
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			st = conn.prepareStatement(
+					"SELECT email FROM users "
+					+ "WHERE email = ?");
+			st.setString(1, email);
+			rs = st.executeQuery();
+			
+			if (rs.next())
+			{
+				throw new AuthException("This email already exist");
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void insert(User obj) {
+	
 		PreparedStatement st = null;
 		ResultSet rs = null;
+		
+		if (!User.isValidEmail(obj.getEmail()))
+		{
+			throw new AuthException("Invalid email");
+		}
+		else
+		{
+			this.verifyByEmail(obj.getEmail());
+		}
 		
 		try
 		{

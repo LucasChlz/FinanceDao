@@ -25,6 +25,17 @@ public class User implements Serializable {
 		this.password = password;
 		this.amount = amount;
 	}
+	
+	public static boolean isValidEmail(String email)
+	{
+
+		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+		if (email.matches(regex))
+		{
+			return true;
+		}
+		return false;
+	}
 
 	public Integer getId() {
 		return id;
