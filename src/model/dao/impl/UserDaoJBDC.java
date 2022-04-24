@@ -22,6 +22,17 @@ public class UserDaoJBDC implements UserDao {
 		this.conn = conn;
 	}
 	
+	private User instantiateUser(ResultSet rs) throws SQLException 
+	{
+		User user = new User();
+		user.setId(rs.getInt("id"));
+		user.setName(rs.getString("name"));
+		user.setEmail(rs.getString("email"));
+		user.setPassword(null);
+		user.setAmount(rs.getDouble("amount"));
+		return user;
+	}
+	
 	public void verifyByEmail(String email)
 	{
 		PreparedStatement st = null;
@@ -112,9 +123,29 @@ public class UserDaoJBDC implements UserDao {
 	}
 
 	@Override
-	public void findById(Integer id) {
-		// TODO Auto-generated method stub
+	public User findById(Integer id) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
 		
+		try
+		{
+			st = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+			st.setInt(1, id);
+			rs = st.executeQuery();
+			
+			if (rs.next())
+			{
+				User user = instantiateUser(rs);
+				
+				return user;
+			}
+			return null;
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -122,6 +153,6 @@ public class UserDaoJBDC implements UserDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
+
 }

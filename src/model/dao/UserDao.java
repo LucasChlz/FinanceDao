@@ -9,7 +9,7 @@ public interface UserDao {
 	void insert(User obj);
 	void update(User obj);
 	void deleteById(Integer id);
-	void findById(Integer id);
+	User findById(Integer id);
 	void verifyByEmail(String email);
 	List<User> findAll();
 	

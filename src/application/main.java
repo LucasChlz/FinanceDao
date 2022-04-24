@@ -10,9 +10,8 @@ public class main {
 		
 		UserDao userDao = DaoFactory.createUserDao();
 		
-		User user1 = new User(null, "Lucas","lucas@gmail.com", "123", 3000.0);
-		userDao.insert(user1);
-		System.out.println("New user created, id = " + user1.getId());
+		User myuser = userDao.findById(6);
+		System.out.println(myuser);
 	}
 
 }
