@@ -154,5 +154,51 @@ public class UserDaoJBDC implements UserDao {
 		return null;
 	}
 
+	@Override
+	public void depositTo(Integer toUser, Integer myUser, Double amount) throws SQLException {
+		PreparedStatement st = null;
+		PreparedStatement st1 = null;
+		conn.setAutoCommit(false);
+		
+		try
+		{
+			User toUserInfo = this.findById(toUser);
+			User myUserInfo = this.findById(myUser);
+			
+			if (myUserInfo.getAmount() <= 0)
+			{
+				throw new AuthException("You don't have sufficient balance for this operation");
+			}
+			
+			st = conn.prepareStatement("UPDATE users SET amount = ? WHERE id = ?");
+			st.setDouble(1, toUserInfo.getAmount()+amount);
+			st.setInt(2, toUserInfo.getId());
+			st.executeUpdate();
+			
+			
+			
+			st1 = conn.prepareStatement("UPDATE users SET amount = ? WHERE id = ?");
+			st1.setDouble(1, myUserInfo.getAmount()-amount);
+			st1.setInt(2, myUserInfo.getId());
+			st1.executeUpdate();
+			
+			conn.commit();
+		}
+		catch(SQLException e)
+		{
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				throw new DbException(e1.getMessage());
+			}
+			e.printStackTrace();
+		}
+		finally
+		{
+			DB.closeStatment(st);
+			DB.closeStatment(st1);
+		}
+	}
+
 
 }
